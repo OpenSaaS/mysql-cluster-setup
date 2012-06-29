@@ -1,0 +1,7 @@
+{
+    "id": "node1",
+    "ipaddress": "10.0.3.10", # ip address of target system
+    "port":"3306",              # port to which connections are proxied
+    "proxy_weight": 1,          # preference to give this system
+    "max_connections":5, 
+}
