@@ -4,5 +4,13 @@
 site 'http://community.opscode.com/api/v1'
 
 cookbook 'rsync'
-cookbook 'percona', :git => 'https://github.com/OpenSaaS/chef-percona'
-cookbook 'haproxy', :git => 'https://github.com/OpenSaaS/chef-haproxy'
+cookbook 'percona',
+  :git => 'https://github.com/OpenSaaS/chef-percona'
+cookbook 'haproxy',
+  :git => 'https://github.com/OpenSaaS/chef-haproxy'
+cookbook 'collectd',
+  :git => 'https://github.com/realityforge-cookbooks/collectd'
+cookbook 'graphite_handler',
+  :git => 'https://github.com/realityforge-cookbooks/graphite_handler'
+cookbook "graphite",
+  :git => "https://github.com/heavywater/chef-graphite"

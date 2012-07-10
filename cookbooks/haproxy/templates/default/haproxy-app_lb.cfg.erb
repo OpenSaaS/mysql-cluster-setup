@@ -1,0 +1,66 @@
+global
+        log 127.0.0.1   local0
+        log 127.0.0.1   local1 notice
+        #log loghost    local0 info
+        maxconn 4096
+        #debug
+        #quiet
+        user haproxy
+        group haproxy
+
+defaults
+        log     global
+        mode    http
+        option  httplog
+        option  dontlognull
+        option  redispatch
+        retries 3
+        maxconn 2000
+        contimeout      5000
+        clitimeout      50000
+        srvtimeout      50000
+        <% if node["haproxy"]["x_forwarded_for"] -%>
+        option httpclose
+        option forwardfor
+        <% end -%>
+        
+# Set up application listeners here.
+listen application 0.0.0.0:<%= node["haproxy"]["incoming_port"] %>
+  balance <%= node["haproxy"]["balance_algorithm"] %>
+  <% if node["haproxy"]["cookie_prefix"] %>
+  # the proxy will modify EVERY cookie sent by the client and the server,
+  # so it is important that it can access to ALL cookies in ALL requests for
+  # each session. This implies that there is no keep-alive (HTTP/1.1), thus 
+  # the "httpclose" and "forwardfor" options.
+  cookie <%= node["haproxy"]["cookie_prefix"] %> prefix
+  option  httpclose 
+  option  forwardfor
+  <% end -%>
+  <% if node["haproxy"]["cookie_insert"] %>
+  cookie <%= node["haproxy"]["cookie_insert"] -%> insert indirect
+  <% end %>
+  <% @pool_members.each do |member| -%>
+  server <%= member[:hostname] -%> 
+    <%= member[:ipaddress] -%>:<%= member[:port] -%> 
+    <%= "cookie #{member[:hostname]}" unless node["haproxy"]["cookie_prefix"].nil? && node["haproxy"]["cookie_insert"].nil? -%>
+    weight <%= member[:proxy_weight] -%> 
+    maxconn <%= member[:max_connections] %> check
+  <% end -%>
+
+<% if node["haproxy"]["enable_ssl"] -%>
+listen ssl_application 0.0.0.0:<%= node["haproxy"]["ssl_incoming_port"] %>
+  balance <%= node["haproxy"]["balance_algorithm"] %>
+  mode tcp
+  <% @pool_members.each do |member| -%>
+  server <%= member[:hostname] -%>
+         <%= member[:ipaddress] -%>:<%= member[:ssl_port] -%> 
+         weight <%= member[:proxy_weight] -%> 
+         maxconn <%= member[:max_connections] %> check
+  <% end -%>
+<% end -%>
+
+<% if node["haproxy"]["enable_admin"] -%>
+listen admin 0.0.0.0:22002
+  mode http
+  stats uri /
+<% end -%>

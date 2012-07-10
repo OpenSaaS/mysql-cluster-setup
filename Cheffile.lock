@@ -1,8 +1,21 @@
 SITE
   remote: http://community.opscode.com/api/v1
   specs:
+    apache2 (1.1.10)
     apt (1.4.2)
+    build-essential (1.0.2)
+    chef_handler (1.0.6)
+    python (1.0.6)
+      build-essential (>= 0.0.0)
     rsync (0.7.0)
+    runit (0.15.0)
+
+GIT
+  remote: https://github.com/OpenSaaS/chef-haproxy
+  ref: master
+  sha: 039e742ea1c7444b77be7bc451a14ab450cb5e50
+  specs:
+    haproxy (1.1.0)
 
 GIT
   remote: https://github.com/OpenSaaS/chef-percona
@@ -13,13 +26,34 @@ GIT
       apt (>= 0.0.0)
 
 GIT
-  remote: https://github.com/coroutine/chef-haproxy
+  remote: https://github.com/heavywater/chef-graphite
   ref: master
-  sha: 039e742ea1c7444b77be7bc451a14ab450cb5e50
+  sha: efe53aac425a452fd60742786a34270b1c304bd8
   specs:
-    haproxy (1.1.0)
+    graphite (0.3.1)
+      apache2 (>= 0.0.0)
+      python (>= 0.0.0)
+      runit (>= 0.0.0)
+
+GIT
+  remote: https://github.com/realityforge-cookbooks/collectd
+  ref: master
+  sha: d1e4f3dcbb489f835af22c40d380249e26083589
+  specs:
+    collectd (1.1.2)
+
+GIT
+  remote: https://github.com/realityforge-cookbooks/graphite_handler
+  ref: master
+  sha: 308102e7d449edb7d1f07c1711a11b03adf19505
+  specs:
+    graphite_handler (0.0.4)
+      chef_handler (>= 0.0.0)
 
 DEPENDENCIES
+  collectd (>= 0)
+  graphite (>= 0)
+  graphite_handler (>= 0)
   haproxy (>= 0)
   percona (>= 0)
   rsync (>= 0)

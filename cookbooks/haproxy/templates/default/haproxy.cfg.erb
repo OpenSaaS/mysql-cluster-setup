@@ -1,65 +1,33 @@
 global
-      maxconn           30000
-      log               127.0.0.1 local0 err
-      uid               200
-      gid               200
-      nbproc            1
-      chroot            /tmp
-      stats socket      /tmp/haproxy.sock user root group root mode 0777 level admin
-      daemon
+        log 127.0.0.1   local0
+        log 127.0.0.1   local1 notice
+        #log loghost    local0 info
+        maxconn 4096
+        #debug
+        #quiet
+        user haproxy
+        group haproxy
 
 defaults
-        option  dontlognull
-        option  dontlog-normal
-        option  log-separate-errors
-        option  http-server-close
-        option  abortonclose
-        option tcp-smart-accept
-        option tcp-smart-connect
-        timeout server                          10s
-        timeout client                          10s
-        timeout queue                           10s
-        timeout connect                         10s
-        timeout http-request                    10s
-        timeout http-keep-alive                 5s
-
-
-frontend app
-        bind                    0.0.0.0:80
-        mode                    http
-        log                     global
-        option                  http-server-close
+        log     global
+        mode    http
         option  httplog
-        option                  dontlog-normal
-        monitor-uri             /monitoruri
-        maxconn                 50000
-        clitimeout              3000
+        option  dontlognull
+        retries 3
+        redispatch
+        maxconn 2000
+        contimeout      5000
+        clitimeout      50000
+        srvtimeout      50000
+        
+# Set up application listeners here.
+listen application 0.0.0.0:<%= node["haproxy"]["incoming_port"] %>
+  balance  <%= node["haproxy"]["balance_algorithm"] %>
+  server localhost 127.0.0.1:4000 weight 1 maxconn <%= node["haproxy"]["member_max_connections"] %> check 
+  server localhost 127.0.0.1:4001 weight 1 maxconn <%= node["haproxy"]["member_max_connections"] %> check 
 
-        default_backend stats
-
-
-frontend mysql_read
-        bind                    0.0.0.0:3306
-        mode                    tcp
-        option                  tcplog
-        maxconn                 20000
-        clitimeout              50000
-        default_backend         cluster_mysql_read
-
-backend cluster_mysql_read
-        mode                    tcp
-        balance                 roundrobin
-        contimeout              3000000
-        srvtimeout              2200000
-        server                  node1 10.0.3.10:3306 weight 150
-        server                  node2 10.0.3.20:3306 weight 150
-        server                  node3 10.0.3.30:3306 weight 150
-
-backend stats
-        log                     global
-        mode                    http
-        stats                   uri /
-        stats                   auth    admin:admin
-        stats                   realm   Haproxy\ Statistics
-        stats                   refresh 5s
-        balance                 roundrobin
+<% if node["haproxy"]["enable_admin"] -%>
+listen admin 0.0.0.0:22002
+  mode http
+  stats uri /
+<% end -%>

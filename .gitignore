@@ -3,6 +3,7 @@
 *.DS_Store
 
 iso
+tmp
 *.iso
 *.log
 *.box
