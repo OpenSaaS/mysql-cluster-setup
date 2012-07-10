@@ -5,6 +5,7 @@ SITE
     apt (1.4.2)
     build-essential (1.0.2)
     chef_handler (1.0.6)
+    ntp (1.1.8)
     python (1.0.6)
       build-essential (>= 0.0.0)
     rsync (0.7.0)
@@ -55,6 +56,7 @@ DEPENDENCIES
   graphite (>= 0)
   graphite_handler (>= 0)
   haproxy (>= 0)
+  ntp (>= 0)
   percona (>= 0)
   rsync (>= 0)
 

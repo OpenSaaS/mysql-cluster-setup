@@ -24,7 +24,9 @@ Vagrant::Config.run do |config|
 
     config.vm.network :hostonly, my_cluster[:node1][:ip]
 	config.vm.provision :chef_solo do |chef|     
-	  chef.cookbooks_path = ["cookbooks"] 
+	  chef.cookbooks_path = ["cookbooks-src"] 
+	  chef.add_recipe('apt')
+	  chef.add_recipe('ntp')
 	  chef.add_recipe('rsync')                                                                                                                  
 	  chef.add_recipe("percona::cluster")
 	  chef.add_recipe("collectd::attribute_driven")	
@@ -65,7 +67,9 @@ Vagrant::Config.run do |config|
 
     config.vm.network :hostonly, my_cluster[:node2][:ip]
 	config.vm.provision :chef_solo do |chef|     
-	  chef.cookbooks_path = ["cookbooks"] 
+	  chef.cookbooks_path = ["cookbooks-src"] 
+	  chef.add_recipe('apt')
+	  chef.add_recipe('ntp')
 	  chef.add_recipe('rsync')                                                                                                                  
 	  chef.add_recipe("percona::cluster")
 	  chef.add_recipe("collectd::attribute_driven")	
@@ -105,9 +109,12 @@ Vagrant::Config.run do |config|
 
     config.vm.network :hostonly, my_cluster[:node3][:ip]
 	config.vm.provision :chef_solo do |chef|     
-	  chef.cookbooks_path = ["cookbooks"] 
+	  chef.cookbooks_path = ["cookbooks-src"]
+	  chef.add_recipe('apt')
+	  chef.add_recipe('ntp')
 	  chef.add_recipe('rsync')                                                                                                                  
 	  chef.add_recipe("percona::cluster")
+	  chef.add_recipe("collectd::attribute_driven")	
 	  chef.json.merge!(
        :percona => { :encrypted_data_bag => nil,
                      :server => {
@@ -139,8 +146,9 @@ Vagrant::Config.run do |config|
 
     config.vm.network :hostonly, my_cluster[:proxy][:ip]
 	config.vm.provision :chef_solo do |chef|     
-	  chef.cookbooks_path = ["cookbooks"] 
-	  chef.add_recipe("apt")
+	  chef.cookbooks_path = ["cookbooks-src"] 
+	  chef.add_recipe('apt')
+	  chef.add_recipe('ntp')
 	  chef.add_recipe("haproxy")	
 	end
   end
@@ -159,7 +167,9 @@ Vagrant::Config.run do |config|
   config.vm.forward_port 25827, 25827  #collectd server uses this port
  
   config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = "cookbooks"
+    chef.cookbooks_path = ["cookbooks-src"]
+	chef.add_recipe('apt')
+	chef.add_recipe('ntp')
 	chef.add_recipe("graphite")
     chef.add_recipe("collectd::attribute_driven")	
 	chef.json.merge!( 
