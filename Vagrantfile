@@ -46,7 +46,7 @@ Vagrant::Config.run do |config|
 					              :plugins => {
 					 				'syslog' => {'config' => {"LogLevel" => "Info"}},
 								    'swap' => {},
-									'mysql' => {'config' => {'Host' => 'localhost', 'User' => 'root', 'Password' => '123-changeme'}},
+									'mysql' => {'template' => 'mysql.conf.erb', 'config' => {'Host' => 'localhost', 'User' => 'root', 'Password' => '123-changeme'}},
 									'memory' => {},
 									'network'=> {'config' => {'Server' => my_cluster[:monitoring][:ip]}}
 									}
@@ -86,13 +86,13 @@ Vagrant::Config.run do |config|
 								  :wsrep_node_name => 'node2'}},
 					:collectd => {:name => 'node2',
 								  :plugins => {
-								 				'syslog' => {'config' => {"LogLevel" => "Info"}},
-											    'swap' => {},
-												'mysql' => {'template' => 'mysql.conf.erb', 'config' => {'Host' => 'localhost', 'User' => 'root', 'Password' => '123-changeme'}},												'memory' => {},
-												'memory' => {},
-												'network'=> {'config' => {'Server' => my_cluster[:monitoring][:ip]}}
-												}
-											})
+								 	'syslog' => {'config' => {"LogLevel" => "Info"}},
+									'swap' => {},
+									'mysql' => {'template' => 'mysql.conf.erb', 'config' => {'Host' => 'localhost', 'User' => 'root', 'Password' => '123-changeme'}},												'memory' => {},
+									'memory' => {},
+									'network'=> {'config' => {'Server' => my_cluster[:monitoring][:ip]}}
+								}
+					})
 	end
   end
 
