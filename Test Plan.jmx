@@ -49,7 +49,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">10000</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
         <stringProp name="ThreadGroup.ramp_time">0</stringProp>
         <longProp name="ThreadGroup.start_time">1340892858000</longProp>
         <longProp name="ThreadGroup.end_time">1340892858000</longProp>
@@ -75,7 +75,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">10000</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.num_threads">50</stringProp>
         <stringProp name="ThreadGroup.ramp_time">0</stringProp>
         <longProp name="ThreadGroup.start_time">1340892858000</longProp>
         <longProp name="ThreadGroup.end_time">1340892858000</longProp>
@@ -100,7 +100,7 @@
         <stringProp name="checkQuery">Select 1</stringProp>
         <stringProp name="connectionAge">5000</stringProp>
         <stringProp name="dataSource">my db cluster</stringProp>
-        <stringProp name="dbUrl">jdbc:mysql://10.0.3.100:3306/test</stringProp>
+        <stringProp name="dbUrl">jdbc:mysql://10.0.3.10:3306/test</stringProp>
         <stringProp name="driver">org.gjt.mm.mysql.Driver</stringProp>
         <boolProp name="keepAlive">true</boolProp>
         <stringProp name="password">123-changeme</stringProp>

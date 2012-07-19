@@ -1,0 +1,14 @@
+# Simple configuration file for xinetd
+#
+# Some defaults, and include /etc/xinetd.d/
+
+defaults
+{
+
+   log_type = SYSLOG daemon info
+   instances       = 20
+   log_on_success  = PID HOST EXIT
+# log_on_failure  = HOST RECORD ATTEMPT
+}
+
+includedir /etc/xinetd.d

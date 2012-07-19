@@ -5,6 +5,7 @@ my_cluster = {
 	:node1 		=> { :ip => "10.0.3.10"},
 	:node2 		=> { :ip => "10.0.3.20"},
 	:node3 		=> { :ip => "10.0.3.30"},
+	:node4 		=> { :ip => "10.0.3.40"},
 	:proxy 		=> { :ip => "10.0.3.100"},
 	:monitoring => { :ip => "10.0.3.200"}
 }
@@ -20,6 +21,8 @@ Vagrant::Config.run do |config|
     #sst rsync port forwarding
     config.vm.forward_port 4444, 4444
 	config.vm.forward_port 4568, 4568
+	config.vm.forward_port 9200, 9200 #for mysql/clustercheck
+	
   	config.vm.provision :shell, :inline => "gem install chef -v 10.12.0 --no-rdoc --no-ri"
 
     config.vm.network :hostonly, my_cluster[:node1][:ip]
@@ -30,6 +33,7 @@ Vagrant::Config.run do |config|
 	  chef.add_recipe('rsync')                                                                                                                  
 	  chef.add_recipe("percona::cluster")
 	  chef.add_recipe("collectd::attribute_driven")	
+	  chef.add_recipe("clustercheck")
     
 	  chef.json.merge!(
        :percona => { :encrypted_data_bag => nil,
@@ -38,7 +42,7 @@ Vagrant::Config.run do |config|
 						:role => 'cluster'
 						},
 					 :cluster => {:wsrep_cluster_address => 'gcomm://',
-					              :wsrep_sst_method => 'rsync',
+					              :wsrep_sst_method => 'xtrabackup',
 								  :wsrep_cluster_name => 'mycoolcluster',
 								  :wsrep_provider => "/usr/lib/libgalera_smm.so",
 								  :wsrep_node_name => 'node1'}},
@@ -96,6 +100,48 @@ Vagrant::Config.run do |config|
 	end
   end
 
+  config.vm.define :node4 do |config|
+    config.vm.box = "myubuntu.12.04"
+   	config.vm.host_name = "db4"
+
+    config.vm.forward_port 3306, 3310
+    #sst rsync port forwarding
+    config.vm.forward_port 4444, 4447
+	config.vm.forward_port 4568, 4571
+
+  	config.vm.provision :shell, :inline => "gem install chef -v 10.12.0 --no-rdoc --no-ri"
+
+    config.vm.network :hostonly, my_cluster[:node4][:ip]
+	config.vm.provision :chef_solo do |chef|     
+	  chef.cookbooks_path = ["cookbooks-src"]
+	  chef.add_recipe('apt')
+	  chef.add_recipe('ntp')
+	  chef.add_recipe('rsync')                                                                                                                  
+	  chef.add_recipe("percona::cluster")
+	  chef.add_recipe("collectd::attribute_driven")	
+	  chef.json.merge!(
+       :percona => { :encrypted_data_bag => nil,
+                     :server => {
+						:bind_address => my_cluster[:node4][:ip],
+						:role => 'cluster'
+						},
+					 :cluster => {:wsrep_cluster_address => "gcomm://#{my_cluster[:node1][:ip]}",
+					              :wsrep_sst_method => 'rsync',
+								  :wsrep_cluster_name => 'mycoolcluster',
+								  :wsrep_provider => "/usr/lib/libgalera_smm.so",
+								  :wsrep_node_name => 'node4'}},
+								:collectd => {:name => 'node4',
+											  :plugins => {
+											 	'syslog' => {'config' => {"LogLevel" => "Info"}},
+											    'swap' => {},
+												'mysql' => {'template' => 'mysql.conf.erb', 'config' => {'Host' => 'localhost', 'User' => 'root', 'Password' => '123-changeme'}},												'memory' => {},
+												'network'=> {'config' => {'Server' => my_cluster[:monitoring][:ip]}}
+												}
+									})
+	end
+  end
+
+
   config.vm.define :node3 do |config|
     config.vm.box = "myubuntu.12.04"
    	config.vm.host_name = "db3"
@@ -136,6 +182,7 @@ Vagrant::Config.run do |config|
 									})
 	end
   end
+
 
   config.vm.define :proxy do |config|
     config.vm.box = "myubuntu.12.04"

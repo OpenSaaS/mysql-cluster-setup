@@ -24,4 +24,7 @@ GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY '<%= @root_password %>' WITH GRANT 
 SET PASSWORD FOR 'root'@'%' = PASSWORD('<%= @root_password %>');
 
 
+#for clustercheck utility
+grant process on *.* to 'clustercheckuser'@'localhost' identified by 'clustercheckpassword!';
+
 FLUSH PRIVILEGES;

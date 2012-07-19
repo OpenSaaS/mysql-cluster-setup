@@ -48,12 +48,12 @@ frontend mysql
 
 backend mysql-cluster
         mode                    tcp
-        balance                 roundrobin
-        contimeout              3000000
-        srvtimeout              2200000
-        server                  node1 10.0.3.10:3306 weight 150
-        server                  node2 10.0.3.20:3306 weight 150
-        server                  node3 10.0.3.30:3306 weight 150
+		balance leastconn
+		option httpchk
+		server node1 10.0.3.10:3306 check port 9200 inter 12000 rise 3 fall 3
+		server node2 10.0.3.20:3306 check port 9200 inter 12000 rise 3 fall 3 backup
+		server node3 10.0.3.30:3306 check port 9200 inter 12000 rise 3 fall 3 backup
+
 
 backend stats
         log                     global
